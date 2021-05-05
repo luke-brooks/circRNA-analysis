@@ -1,5 +1,9 @@
 # RNA references & outputs
 _RNA-Seq/*
+src/_RNA-Seq/*
+
+# Requirements files
+~*.docx
 
 # Compiled class file
 *.class
