@@ -4,15 +4,12 @@ import static config.Constants.SEQUENCE_COMPLEMENT;
 import static config.Constants.TXT_EXTENSION;
 
 public class ChromosomeRef {
-    String senseName;
-    String antiSenseName;
-    boolean isHuman;
+    private String senseName;
+    private String antiSenseName;
+    private boolean isHuman;
 
-    String senseFileName;
-    String antiSenseFileName;
-
-    String senseSequence;
-    String antiSenseSequence;
+    private String senseSequence;
+    private String antiSenseSequence;
 
     private String _antiSensePostFix = SEQUENCE_COMPLEMENT;
     private String _fileExtension = TXT_EXTENSION;

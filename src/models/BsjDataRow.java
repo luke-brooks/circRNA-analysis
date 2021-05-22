@@ -1,14 +1,19 @@
 package models;
 
 public class BsjDataRow {
+    // Raw Bed File Data
     private String chromosome;
-    private String junctionStart;
-    private String junctionEnd;
+    private int junctionStart;
+    private int junctionEnd;
     private String name;
     private String bsjCount;
-    private String strand;
+    private String strand; // either "+" or "-"
 
-    public BsjDataRow(String chromosome, String junctionStart, String junctionEnd, String name, String bsjCount, String strand) {
+    // Calculated values
+    private String bsjFlankingSequence;
+    private String spliceDa; // always 4 characters
+
+    public BsjDataRow(String chromosome, int junctionStart, int junctionEnd, String name, String bsjCount, String strand) {
         this.chromosome = chromosome;
         this.junctionStart = junctionStart;
         this.junctionEnd = junctionEnd;
@@ -17,27 +22,37 @@ public class BsjDataRow {
         this.strand = strand;
     }
 
+    // Raw Bed File Data
     public String getChromosome() {
         return chromosome;
     }
-
-    public String getJunctionStart() {
+    public int getJunctionStart() {
         return junctionStart;
     }
-
-    public String getJunctionEnd() {
+    public int getJunctionEnd() {
         return junctionEnd;
     }
-
     public String getName() {
         return name;
     }
-
     public String getBsjCount() {
         return bsjCount;
     }
-
     public String getStrand() {
         return strand;
+    }
+
+    // Calculated values
+    public String getBsjFlankingSequence() {
+        return bsjFlankingSequence;
+    }
+    public String getSpliceDa() {
+        return spliceDa;
+    }
+    public void setBsjFlankingSequence(String bsjFlankingSequence) {
+        this.bsjFlankingSequence = bsjFlankingSequence;
+    }
+    public void setSpliceDa(String spliceDa)  {
+        this.spliceDa = spliceDa;
     }
 }

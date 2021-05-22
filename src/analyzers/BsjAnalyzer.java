@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import builders.ChromosomeRefBuilder;
 import builders.SpliceDaOptionsBuilder;
 import config.BsjConfiguration;
-import static config.Constants.BED_EXTENSION;
-import static config.Constants.SLASH;
+import static config.Constants.*;
 import models.BedFile;
 import models.BsjDataRow;
 import models.ChromosomeRef;
+import utilities.FileUtility;
 
 public class BsjAnalyzer {
     private BsjConfiguration _config;
@@ -28,152 +28,203 @@ public class BsjAnalyzer {
         this._spliceOptions = SpliceDaOptionsBuilder.buildSpliceOptions(config.getSpliceDaOptionsFilePath());
     }
 
-	public void execute() {
+    public void execute() {
         ArrayList<BedFile> parsedBedFiles = parseBedFileData();
 
-		// BsjToHeatmap.execute(bsjSeqOutDir, heatmapOutDir);
-	}
+        // _chromosomeReferences = new ArrayList<>(); // dump data-heavy list
+
+        buildBsjSummaryOutput(parsedBedFiles);
+    }
+
+    private void buildBsjSummaryOutput(ArrayList<BedFile> parsedBedFiles) {
+        try {
+            for (BedFile parsedFile : parsedBedFiles) {
+                BufferedWriter bsjSummaryOutfile = FileUtility.createOutFile(_config.getBsjSummaryPath(), parsedFile.getFileName() + BSJ_SUMMARY_FILE_SUFFIX + CSV_EXTENSION);
+
+                bsjSummaryOutfile.write(buildBsjSummaryHeaderLine());
+                bsjSummaryOutfile.write("\n");
+
+                for (BsjDataRow parsedRow : parsedFile.getFileBsjData()) {
+                    String outputLine = buildOutputLineBsjSummary(parsedRow);
+                    bsjSummaryOutfile.write(outputLine);
+                    bsjSummaryOutfile.write("\n");
+                }
+
+                bsjSummaryOutfile.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in BsjAnalyzer#buildBsjSummaryOutput(): " + e.getMessage());
+        }
+    }
+
+    private String buildBsjSummaryHeaderLine() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Chromosome");
+        builder.append(",");
+        builder.append("JunctionEnd");
+        builder.append(",");
+        builder.append("JunctionStart");
+        builder.append(",");
+        builder.append("Name");
+        builder.append(",");
+        builder.append("Count");
+        builder.append(",");
+        builder.append("Strand");
+        builder.append(",");
+        builder.append("BSJFlankingSeq");
+        builder.append(",");
+        builder.append("Splice D-A");
+
+        return builder.toString();
+    }
+
+    private String buildOutputLineBsjSummary(BsjDataRow row) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(row.getChromosome());
+        builder.append(",");
+        builder.append(row.getJunctionEnd());
+        builder.append(",");
+        builder.append(row.getJunctionStart());
+        builder.append(",");
+        builder.append(row.getName());
+        builder.append(",");
+        builder.append(row.getBsjCount());
+        builder.append(",");
+        builder.append(row.getStrand());
+        builder.append(",");
+        builder.append(row.getBsjFlankingSequence());
+        builder.append(",");
+        builder.append(row.getSpliceDa());
+
+        return builder.toString();
+    }
 
     private ArrayList<BedFile> parseBedFileData() {
         ArrayList<BedFile> result = new ArrayList<BedFile>();
 
         try {
-			File bedInputDir = new File(_config.getBedFilePath());
+            File bedInputDir = new File(_config.getBedFilePath());
 
-			for(String bedFileName : bedInputDir.list()) {
-				if(bedFileName.endsWith(BED_EXTENSION)) {
+            for (String bedFileName : bedInputDir.list()) {
+                if (bedFileName.endsWith(BED_EXTENSION)) {
 
                     BedFile bedFileData = new BedFile(bedFileName);
-					
-					BufferedReader inputBedFile = new BufferedReader(new FileReader(bedInputDir.getAbsolutePath() + SLASH + bedFileName));
-					for (String line = inputBedFile.readLine(); line != null; line = inputBedFile.readLine()) {
-						String[] dataColumns = line.split("\t");
+
+                    BufferedReader inputBedFile = new BufferedReader(new FileReader(bedInputDir.getAbsolutePath() + SLASH + bedFileName));
+                    for (String line = inputBedFile.readLine(); line != null; line = inputBedFile.readLine()) {
+                        String[] dataColumns = line.split("\t");
 
                         String chromosome = dataColumns[0];
-                        String junctionEnd = dataColumns[1];
-                        String junctionStart = dataColumns[2];
+                        int junctionEnd = Integer.parseInt(dataColumns[1]);
+                        int junctionStart = Integer.parseInt(dataColumns[2]);
                         String name = dataColumns[3];
                         String bsjCount = dataColumns[4];
                         String strand = dataColumns[5];
 
                         BsjDataRow row = new BsjDataRow(chromosome, junctionStart, junctionEnd, name, bsjCount, strand);
 
-                        bedFileData.addBsjDataRow(row);
-					}
+                        boolean success = calculateBsjSummaryValues(row);
+
+                        if(success) {
+                            bedFileData.addBsjDataRow(row);
+                        }
+                    }
                     result.add(bedFileData);
-					inputBedFile.close();
-				} else {
-					System.out.println("Not .bed file type: " + bedFileName);
-				}
-			}
+                    inputBedFile.close();
+                } else {
+                    System.out.println("Not .bed file type: " + bedFileName);
+                }
+            }
         } catch (Exception e) {
-			System.out.println("Error in BsjAnalysis#parseBedFileData(): " + e.getMessage());
-		}
+            System.out.println("Error in BsjAnalysis#parseBedFileData(): " + e.getMessage());
+        }
         return result;
     }
 
-	public void buildBsjSequence(String bedFileInputDir, String bsjSeqOutDir, String chromosomeName, String refFileData) {
-		try {
-            String test = "./_RNA-Seq/_BSJ_bed_files/" + bedFileInputDir;
-            System.out.println("LTB: pulling files from: " + test);
-			File bedInputDir = new File(test);
-			String[] bedFileList = bedInputDir.list();
-			for(String bedFileName : bedFileList) {
-                System.out.println("file name: " + bedFileName);
-				if(bedFileName.endsWith(BED_EXTENSION)) {
-                    System.out.println("LTB: starting bed file processing");
+    private boolean calculateBsjSummaryValues(BsjDataRow row) {
+        String refFileData = getReferenceFileData(row.getChromosome(), row.getStrand());
 
-                    BedFile bedFileData = new BedFile(bedFileName);
-					// BufferedWriter bsjSeqOutfile = createOutFile(bsjSeqOutDir, bedFileName + "_bsj_seq.txt");
-					// System.out.println("outfile create");
-					
-					BufferedReader inputBedFile = new BufferedReader(new FileReader(bedInputDir.getAbsolutePath()+"/"+bedFileName));
-					for (String line = inputBedFile.readLine(); line != null; line = inputBedFile.readLine()) {
-					// 	// remove tabs from data
-						String[] dataColumns = line.split("\t");
+        if("".equals(refFileData)) {
+            // no chromosome ref available
+            return false;
+        }
 
-                        String chromosome = dataColumns[0];
-                        String junctionEnd = dataColumns[1];
-                        String junctionStart = dataColumns[2];
-                        String name = dataColumns[3];
-                        String bsjCount = dataColumns[4];
-                        String strand = dataColumns[5];
+        // there's gotta be a way to simplify these...
+        row.setBsjFlankingSequence(getBsjFlankingSequence(row.getJunctionStart(), row.getJunctionEnd(), refFileData));
+        row.setSpliceDa(getSpliceDaSequence(row.getJunctionStart(), row.getJunctionEnd(), refFileData));
 
-                        BsjDataRow row = new BsjDataRow(chromosome, junctionStart, junctionEnd, name, bsjCount, strand);
+        return true;
+    }
 
-                        bedFileData.addBsjDataRow(row);
+    private String getSpliceDaSequence(int junctionStart, int junctionEnd, String refFileData) {
+        String result = "";
 
-					// 	// only process lines with desired chromosome name
-					// 	if(line.startsWith(chromosomeName)) {
-					// 		// calculate b values
-					// 		int highB = Integer.parseInt(dataColumns[2]);
-					// 		int lowB = highB - 30;
-					// 		String fastaB = getFasta(refFileData, lowB, highB);
-					// 		// System.out.println("fasta b: " + fastaB);
+        int lowB = junctionStart;
+        int highB = lowB + 2;
+        String fastaB = getFasta(refFileData, lowB, highB);
 
-					// 		// calculate a values
-					// 		int lowA = Integer.parseInt(dataColumns[1]);
-					// 		int highA = lowA + 30;
-					// 		String fastaA = getFasta(refFileData, lowA, highA);
-					// 		// System.out.println("fasta a: " + fastaA);
-							
-					// 		// save data
-					// 		String outputLine = buildOutputLine(dataColumns, fastaB, fastaA);
-					// 		bsjSeqOutfile.write(outputLine);
-					// 	} else {
-					// 		// System.out.println("wrong chromosome name: " + line);
-					// 	}
-					}
-                    System.out.println("LTB: data row count for " + bedFileName + " is " + bedFileData.getFileBsjData().size());
-					inputBedFile.close();
+        int highA = junctionEnd;
+        int lowA = highA - 2;
+        String fastaA = getFasta(refFileData, lowA, highA);
 
-					// bsjSeqOutfile.close();
-				} else {
-					System.out.println("wrong file type: " + bedFileName);
-				}
-			}
-		} catch (Exception e) {
-			// System.out.println("Error in BSJtoNtHeatmaps#buildBsjSequence(): " + e.getMessage());
-		}
-	}
+        result = fastaB + fastaA;
 
-	public String getFasta(String sourceString, int startIndex, int endIndex) {
-		// STRING LENGTH IS ZERO BASED
-		String result = "";
-		int totalLength = sourceString.length();
-		// prevent endIndex from being greater than sourceString.length()
-		endIndex = totalLength < endIndex ? totalLength : endIndex;
+        return result;
+    }
 
-		result = sourceString.substring(startIndex, endIndex);
+    private String getBsjFlankingSequence(int junctionStart, int junctionEnd, String refFileData) {
+        String result = "";
 
-		return result;
-	}
+        int highB = junctionStart;
+        int lowB = highB - 30;
+        String fastaB = getFasta(refFileData, lowB, highB);
 
+        int lowA = junctionEnd;
+        int highA = lowA + 30;
+        String fastaA = getFasta(refFileData, lowA, highA);
 
-	public String buildOutputLine(String[] dataColumns, String fastaB, String fastaA) {
-		String result = "";
+        result = fastaB + fastaA;
 
-		result = result + dataColumns[0] + "\t";
-		result = result + dataColumns[1] + "\t";
-		result = result + dataColumns[2] + "\t";
-		result = result + dataColumns[3] + "\t";
-		result = result + fastaB + "\t";
-		result = result + fastaA + "\t";
+        return result;
+    }
 
-		result = result + "\n";
+    private String getReferenceFileData(String chromosomeName, String strandType) {
+        String result = "";
 
-		return result;
-	}
+        ChromosomeRef targetRef = _chromosomeReferences.stream()
+                .filter(ref -> ref.getSenseName().toLowerCase().equals(chromosomeName.toLowerCase())).findAny()
+                .orElse(null);
 
-	public BufferedWriter createOutFile(String outDir, String outFileName) {
-		BufferedWriter result = null;
-		try {
-			FileWriter initFile = new FileWriter(new File(outDir + outFileName));
-			result = new BufferedWriter(initFile);
-			result.write("\n");
-		} catch(Exception e) {
-			// System.out.println("Error in BSJtoNtHeatmaps#createOutFile()" + e.getMessage());
-		}
-		return result;
-	}
+        if (targetRef == null) {
+            System.out.println("Error: No Reference File for Chromosome: " + chromosomeName);
+        } else {
+            if (strandType.equals("+")) {
+                result = targetRef.getSenseSequence();
+            } else if (strandType.equals("-")) {
+                result = targetRef.getAntiSenseSequence();
+            } else {
+                System.out.println("Error: Unrecognized Strand Type: " + strandType);
+            }
+        }
+
+        return result;
+    }
+
+    private String getFasta(String sourceString, int startIndex, int endIndex) {
+        if (startIndex > endIndex) {
+            int temp = startIndex;
+            startIndex = endIndex;
+            endIndex = temp;
+        }
+        String result = "";
+        int totalLength = sourceString.length();
+        // prevent endIndex from being greater than sourceString.length()
+        endIndex = totalLength < endIndex ? totalLength : endIndex;
+
+        result = sourceString.substring(startIndex, endIndex);
+
+        return result;
+    }
 }

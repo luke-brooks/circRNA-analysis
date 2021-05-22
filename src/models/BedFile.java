@@ -3,8 +3,8 @@ package models;
 import java.util.ArrayList;
 
 public class BedFile {
-    String fileName;
-    ArrayList<BsjDataRow> fileBsjData;
+    private String fileName;
+    private ArrayList<BsjDataRow> fileBsjData;
 
     public BedFile(String fileName) {
         this.fileName = fileName;

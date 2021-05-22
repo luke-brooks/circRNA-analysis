@@ -47,6 +47,7 @@ public class BSJtoNtHeatmaps {
 
 						// only process lines with desired chromosome name
 						if(line.startsWith(chromosomeName)) {
+                            
 							// calculate b values
 							int highB = Integer.parseInt(dataColumns[2]);
 							int lowB = highB - 30;
