@@ -7,53 +7,45 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
+import builders.ChromosomeRefBuilder;
+import builders.SpliceDaOptionsBuilder;
+import config.BsjConfiguration;
+import static config.Constants.BED_EXTENSION;
+import static config.Constants.SLASH;
 import models.BedFile;
 import models.BsjDataRow;
+import models.ChromosomeRef;
 
-public class BsjAnalysis {
+public class BsjAnalyzer {
+    private BsjConfiguration _config;
+    private ArrayList<ChromosomeRef> _chromosomeReferences;
+    private ArrayList<String> _spliceOptions;
 
-	public static void execute(String bedFileInputDir, boolean isHSV1, boolean isKT) throws IOException {
-		String chromosomeName = "NC_009333.1";
+    public BsjAnalyzer(BsjConfiguration config) {
+        this._config = config;
+        this._chromosomeReferences = ChromosomeRefBuilder.buildChromosomeRefs(config.getRefFilePath());
+        this._spliceOptions = SpliceDaOptionsBuilder.buildSpliceOptions(config.getSpliceDaOptionsFilePath());
+    }
 
-		// Output locations
-		String outDir = "./Outputs/" + "BSJtoNtHeatmaps/";
-		// String bedABOutDir = outDir + "Bed_A_B/";
-		String bsjSeqOutDir = outDir + "ConcatBSJSeq/";
-		String heatmapOutDir = outDir + "NtHeatmapOutput/";
-		
-		if(isHSV1) {
-			chromosomeName = isKT ? "KT899744" : "NC_001806.2";
-		}
-        System.out.println("LTB: hi mom");
-		// all .bed files will use the same refFile
-		// String refFilePath = "./_Refs/" + chromosomeName + ".txt";
-		// String refFileData = readFileToString(refFilePath);
-
-        ArrayList<BedFile> parsedBedFiles = parseBedFileldata(bedFileInputDir);
-        System.out.println("LTB: parsed file count " + parsedBedFiles.size());
+	public void execute() {
+        ArrayList<BedFile> parsedBedFiles = parseBedFileData();
 
 		// BsjToHeatmap.execute(bsjSeqOutDir, heatmapOutDir);
 	}
 
-    public static ArrayList<BedFile> parseBedFileldata(String bedFileInputDir) {
+    private ArrayList<BedFile> parseBedFileData() {
         ArrayList<BedFile> result = new ArrayList<BedFile>();
 
         try {
-            // need to move this config to somewhere more usable
-            String test = "./_RNA-Seq/_BSJ_bed_files/" + bedFileInputDir;
-            System.out.println("LTB: pulling files from: " + test);
-			File bedInputDir = new File(test);
-			String[] bedFileList = bedInputDir.list();
-			for(String bedFileName:bedFileList) {
-                System.out.println("file name: " + bedFileName);
-				if(bedFileName.endsWith(".bed")) {
-                    System.out.println("LTB: starting bed file processing");
+			File bedInputDir = new File(_config.getBedFilePath());
+
+			for(String bedFileName : bedInputDir.list()) {
+				if(bedFileName.endsWith(BED_EXTENSION)) {
 
                     BedFile bedFileData = new BedFile(bedFileName);
 					
-					BufferedReader inputBedFile = new BufferedReader(new FileReader(bedInputDir.getAbsolutePath()+"/"+bedFileName));
+					BufferedReader inputBedFile = new BufferedReader(new FileReader(bedInputDir.getAbsolutePath() + SLASH + bedFileName));
 					for (String line = inputBedFile.readLine(); line != null; line = inputBedFile.readLine()) {
 						String[] dataColumns = line.split("\t");
 
@@ -68,28 +60,27 @@ public class BsjAnalysis {
 
                         bedFileData.addBsjDataRow(row);
 					}
-                    System.out.println("LTB: data row count for " + bedFileName + " is " + bedFileData.getFileBsjData().size());
                     result.add(bedFileData);
 					inputBedFile.close();
 				} else {
-					System.out.println("wrong file type: " + bedFileName);
+					System.out.println("Not .bed file type: " + bedFileName);
 				}
 			}
         } catch (Exception e) {
-			System.out.println("Error in BsjAnalysis#parseBedFileldata(): " + e.getMessage());
+			System.out.println("Error in BsjAnalysis#parseBedFileData(): " + e.getMessage());
 		}
         return result;
     }
 
-	public static void buildBsjSequence(String bedFileInputDir, String bsjSeqOutDir, String chromosomeName, String refFileData) {
+	public void buildBsjSequence(String bedFileInputDir, String bsjSeqOutDir, String chromosomeName, String refFileData) {
 		try {
             String test = "./_RNA-Seq/_BSJ_bed_files/" + bedFileInputDir;
             System.out.println("LTB: pulling files from: " + test);
 			File bedInputDir = new File(test);
 			String[] bedFileList = bedInputDir.list();
-			for(String bedFileName:bedFileList) {
+			for(String bedFileName : bedFileList) {
                 System.out.println("file name: " + bedFileName);
-				if(bedFileName.endsWith(".bed")) {
+				if(bedFileName.endsWith(BED_EXTENSION)) {
                     System.out.println("LTB: starting bed file processing");
 
                     BedFile bedFileData = new BedFile(bedFileName);
@@ -146,7 +137,7 @@ public class BsjAnalysis {
 		}
 	}
 
-	public static String getFasta(String sourceString, int startIndex, int endIndex) {
+	public String getFasta(String sourceString, int startIndex, int endIndex) {
 		// STRING LENGTH IS ZERO BASED
 		String result = "";
 		int totalLength = sourceString.length();
@@ -158,28 +149,8 @@ public class BsjAnalysis {
 		return result;
 	}
 
-	public static String readFileToString(String file) {
-		StringBuilder  stringBuilder = new StringBuilder();
-		boolean isFirstLine = true;
-		try {
-			BufferedReader fileToRead = new BufferedReader(new FileReader(file));
-			for (String line = fileToRead.readLine(); line != null; line = fileToRead.readLine()) {
-				if (!isFirstLine) {
-					// // System.out.println("Line length: " + line.length());
-					stringBuilder.append(line);
-				} else {
-					// // System.out.println("Skipping: " + line);
-					isFirstLine = false;
-				}
-			}
-			fileToRead.close();
-		} catch (Exception e) {
-			// System.out.println("Error in BSJtoNtHeatmaps#readFileToString(): file - " + file + "Error msg: " + e.getMessage());
-		}
-		return stringBuilder.toString();
-	}
 
-	public static String buildOutputLine(String[] dataColumns, String fastaB, String fastaA) {
+	public String buildOutputLine(String[] dataColumns, String fastaB, String fastaA) {
 		String result = "";
 
 		result = result + dataColumns[0] + "\t";
@@ -194,7 +165,7 @@ public class BsjAnalysis {
 		return result;
 	}
 
-	public static BufferedWriter createOutFile(String outDir, String outFileName) {
+	public BufferedWriter createOutFile(String outDir, String outFileName) {
 		BufferedWriter result = null;
 		try {
 			FileWriter initFile = new FileWriter(new File(outDir + outFileName));

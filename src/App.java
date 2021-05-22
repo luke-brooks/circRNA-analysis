@@ -1,42 +1,25 @@
-import analyzers.BsjAnalysis;
-import models.BsjDataRow;
+import analyzers.BsjAnalyzer;
+import config.BsjConfiguration;
 
 public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Starting bsj app!");
+        BsjConfiguration config = new BsjConfiguration("_RNA-Seq");
+        
+        // inputs
+        config.setBedFileDirName("_BSJ_bed_files/testfiles");
+        config.setRefFileDirName("_Refs");
+        config.setSpliceDaOptionsFileName("SpliceDAOptions.txt");
+    
+        // outputs
+        config.setOutputsAnalysisDirName("Outputs/Final_BSJAnalysis");
+        config.setBsjSummaryDirName("1.BSJ_Summary");
+        config.setBsjNtMatrixDirName("2.BSJ_Nt_Matrix");
+        config.setSpliceDaFrequencyDirName("3.SpliceDAFrequency");
+        config.setSashimiDirName("4.Sashimi");
 
-        boolean isHSV1 = false;
-        boolean isKT = false;
-        // String bedFileDir = "BSJ_bed_files-S15-KOS/";
-        String bedFileDir = "testfiles/";
-        String logDirectory = "S18";
-
-        BsjDataRow test = new BsjDataRow("", "", "", "", "", "");
-
-        BsjAnalysis.execute(bedFileDir, isHSV1, isKT);
-
-        // AggregateReadCounts.execute(logDirectory);
-        // Input: STAR2p log final file (logDirectory)
-        // Output: breakdown of read mapping in txt file
-
-        // BsjHistogramAggregateTemplate.execute(bedFileDir, isHSV1, isKT);
-        // Input: CircExplorer BSJ junction files (bedFileDir)
-        // Output: Aggregated per bp count of BSJ reads
-
-        // BsjStartEnd_aggregate.execute();
-        // Input: CircExplorer BSJ junction files (bedFileDir)
-        // Output: Separate Bedgraph files for 5' and 3' BSJ counts per bp
-
-        // BSJtoNtHeatmaps.execute(bedFileDir, isHSV1, isKT);
-        // Input: CircExplorer BSJ junction files (bedFileDir)
-        // Ouput: Txt matrix of nt sequence 30 nt upstream of downstream for all viral
-        // circRNA
-
-        // BsjToSashimi.execute(bedFileDir);
-        // Input: CircExplorer BSJ junction files (bedFileDir)
-        // Output: sashimi files
-
-        // BSJtoSpliceDA.execute(bedFileDir, isHSV1, isKT);
+        BsjAnalyzer bsjAnalyzer = new BsjAnalyzer(config);
+        bsjAnalyzer.execute();
 
         System.out.println("Completed run of bsj app!");
     }
