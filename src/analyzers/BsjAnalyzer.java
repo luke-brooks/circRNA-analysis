@@ -1,21 +1,19 @@
 package analyzers;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
+import builders.BsjSummaryBuilder;
 import builders.ChromosomeRefBuilder;
 import builders.SpliceDaOptionsBuilder;
 import config.BsjConfiguration;
-import static config.Constants.*;
+import static config.Constants.BED_EXTENSION;
+import static config.Constants.SLASH;
 import models.BedFile;
 import models.BsjDataRow;
 import models.ChromosomeRef;
-import utilities.FileUtility;
 
 public class BsjAnalyzer {
     private BsjConfiguration _config;
@@ -33,72 +31,7 @@ public class BsjAnalyzer {
 
         // _chromosomeReferences = new ArrayList<>(); // dump data-heavy list
 
-        buildBsjSummaryOutput(parsedBedFiles);
-    }
-
-    private void buildBsjSummaryOutput(ArrayList<BedFile> parsedBedFiles) {
-        try {
-            for (BedFile parsedFile : parsedBedFiles) {
-                BufferedWriter bsjSummaryOutfile = FileUtility.createOutFile(_config.getBsjSummaryPath(), parsedFile.getFileName() + BSJ_SUMMARY_FILE_SUFFIX + CSV_EXTENSION);
-
-                bsjSummaryOutfile.write(buildBsjSummaryHeaderLine());
-                bsjSummaryOutfile.write("\n");
-
-                for (BsjDataRow parsedRow : parsedFile.getFileBsjData()) {
-                    String outputLine = buildOutputLineBsjSummary(parsedRow);
-                    bsjSummaryOutfile.write(outputLine);
-                    bsjSummaryOutfile.write("\n");
-                }
-
-                bsjSummaryOutfile.close();
-            }
-        } catch (Exception e) {
-            System.out.println("Error in BsjAnalyzer#buildBsjSummaryOutput(): " + e.getMessage());
-        }
-    }
-
-    private String buildBsjSummaryHeaderLine() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("Chromosome");
-        builder.append(",");
-        builder.append("JunctionEnd");
-        builder.append(",");
-        builder.append("JunctionStart");
-        builder.append(",");
-        builder.append("Name");
-        builder.append(",");
-        builder.append("Count");
-        builder.append(",");
-        builder.append("Strand");
-        builder.append(",");
-        builder.append("BSJFlankingSeq");
-        builder.append(",");
-        builder.append("Splice D-A");
-
-        return builder.toString();
-    }
-
-    private String buildOutputLineBsjSummary(BsjDataRow row) {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(row.getChromosome());
-        builder.append(",");
-        builder.append(row.getJunctionEnd());
-        builder.append(",");
-        builder.append(row.getJunctionStart());
-        builder.append(",");
-        builder.append(row.getName());
-        builder.append(",");
-        builder.append(row.getBsjCount());
-        builder.append(",");
-        builder.append(row.getStrand());
-        builder.append(",");
-        builder.append(row.getBsjFlankingSequence());
-        builder.append(",");
-        builder.append(row.getSpliceDa());
-
-        return builder.toString();
+        BsjSummaryBuilder.buildBsjSummaryOutput(parsedBedFiles, _config.getBsjSummaryPath());
     }
 
     private ArrayList<BedFile> parseBedFileData() {
