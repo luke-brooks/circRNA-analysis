@@ -27,14 +27,20 @@ public class BsjAnalyzer {
     }
 
     public void execute() {
-        ArrayList<BedFile> parsedBedFiles = parseBedFileData();
+        ArrayList<BedFile> processedBedFiles = processBedFileData();
 
         // _chromosomeReferences = new ArrayList<>(); // dump data-heavy list
 
-        BsjSummaryBuilder.buildBsjSummaryOutput(parsedBedFiles, _config.getBsjSummaryPath());
+        compileOutputs(processedBedFiles);
+    }
+    
+    private void compileOutputs(ArrayList<BedFile> processedBedFiles) {
+        for (BedFile processedFile : processedBedFiles) {
+            BsjSummaryBuilder.buildBsjSummaryOutputFile(processedFile, _config.getBsjSummaryPath());
+        }
     }
 
-    private ArrayList<BedFile> parseBedFileData() {
+    private ArrayList<BedFile> processBedFileData() {
         ArrayList<BedFile> result = new ArrayList<BedFile>();
 
         try {
@@ -71,7 +77,7 @@ public class BsjAnalyzer {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error in BsjAnalysis#parseBedFileData(): " + e.getMessage());
+            System.out.println("Error in BsjAnalysis#processBedFileData(): " + e.getMessage());
         }
         return result;
     }

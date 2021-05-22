@@ -12,22 +12,20 @@ import utilities.FileUtility;
 
 public class BsjSummaryBuilder {
 
-    public static void buildBsjSummaryOutput(ArrayList<BedFile> parsedBedFiles, String bsjSummaryOutputPath) {
+    public static void buildBsjSummaryOutputFile(BedFile processedBedFile, String bsjSummaryOutputPath) {
         try {
-            for (BedFile parsedFile : parsedBedFiles) {
-                BufferedWriter bsjSummaryOutfile = FileUtility.createOutFile(bsjSummaryOutputPath, parsedFile.getFileName() + BSJ_SUMMARY_FILE_SUFFIX + CSV_EXTENSION);
+            BufferedWriter bsjSummaryOutfile = FileUtility.createOutFile(bsjSummaryOutputPath, processedBedFile.getFileName() + BSJ_SUMMARY_FILE_SUFFIX + CSV_EXTENSION);
 
-                bsjSummaryOutfile.write(buildBsjSummaryHeaderLine());
+            bsjSummaryOutfile.write(buildBsjSummaryHeaderLine());
+            bsjSummaryOutfile.write("\n");
+
+            for (BsjDataRow parsedRow : processedBedFile.getFileBsjData()) {
+                String outputLine = buildOutputLineBsjSummary(parsedRow);
+                bsjSummaryOutfile.write(outputLine);
                 bsjSummaryOutfile.write("\n");
-
-                for (BsjDataRow parsedRow : parsedFile.getFileBsjData()) {
-                    String outputLine = buildOutputLineBsjSummary(parsedRow);
-                    bsjSummaryOutfile.write(outputLine);
-                    bsjSummaryOutfile.write("\n");
-                }
-
-                bsjSummaryOutfile.close();
             }
+
+            bsjSummaryOutfile.close();
         } catch (Exception e) {
             System.out.println("Error in BsjSummaryBuilder#buildBsjSummaryOutput(): " + e.getMessage());
         }
