@@ -34,4 +34,14 @@ public class StringUtility {
         }
         return stringBuilder.toString();
     }
+
+    public static String reverseString(String stringToReverse) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = stringToReverse.length() - 1; i >= 0; i--) {
+            builder.append(stringToReverse.charAt(i));
+        }
+
+        return builder.toString();
+    }
 }

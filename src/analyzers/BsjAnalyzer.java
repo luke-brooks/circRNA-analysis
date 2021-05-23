@@ -17,6 +17,7 @@ import models.BedFile;
 import models.BsjDataRow;
 import models.ChromosomeRef;
 import utilities.LoggingUtility;
+import utilities.StringUtility;
 
 public class BsjAnalyzer {
     private BsjConfiguration _config;
@@ -94,7 +95,7 @@ public class BsjAnalyzer {
     }
 
     private boolean calculateBsjSummaryValues(BsjDataRow row) {
-        String refFileData = getReferenceFileData(row.getChromosome(), row.getStrand());
+        String refFileData = getReferenceFileData(row.getChromosome(), row.getIsSense());
 
         if("".equals(refFileData)) {
             // no chromosome ref available
@@ -102,13 +103,13 @@ public class BsjAnalyzer {
         }
 
         // there's gotta be a way to simplify these...
-        row.setBsjFlankingSequence(getBsjFlankingSequence(row.getJunctionStart(), row.getJunctionEnd(), refFileData));
-        row.setSpliceDa(getSpliceDaSequence(row.getJunctionStart(), row.getJunctionEnd(), refFileData));
+        row.setBsjFlankingSequence(getBsjFlankingSequence(row.getJunctionStart(), row.getJunctionEnd(), row.getIsSense(), refFileData));
+        row.setSpliceDa(getSpliceDaSequence(row.getJunctionStart(), row.getJunctionEnd(), row.getIsSense(), refFileData));
 
         return true;
     }
 
-    private String getSpliceDaSequence(int junctionStart, int junctionEnd, String refFileData) {
+    private String getSpliceDaSequence(int junctionStart, int junctionEnd, boolean isSense, String refFileData) {
         String result = "";
 
         int lowB = junctionStart;
@@ -121,10 +122,14 @@ public class BsjAnalyzer {
 
         result = fastaB + fastaA;
 
+        if (!isSense) {
+            result = StringUtility.reverseString(result);
+        }
+
         return result;
     }
 
-    private String getBsjFlankingSequence(int junctionStart, int junctionEnd, String refFileData) {
+    private String getBsjFlankingSequence(int junctionStart, int junctionEnd, boolean isSense, String refFileData) {
         String result = "";
 
         int highB = junctionStart;
@@ -137,10 +142,14 @@ public class BsjAnalyzer {
 
         result = fastaB + fastaA;
 
-        return result;
+        if (!isSense) {
+            result = StringUtility.reverseString(result);
+        }
+
+        return StringUtility.reverseString(result);
     }
 
-    private String getReferenceFileData(String chromosomeName, String strandType) {
+    private String getReferenceFileData(String chromosomeName, boolean isSense) {
         String result = "";
 
         ChromosomeRef targetRef = _chromosomeReferences.stream()
@@ -151,12 +160,10 @@ public class BsjAnalyzer {
         if (targetRef == null) {
             LoggingUtility.printWarning("No Reference File for Chromosome: " + chromosomeName);
         } else {
-            if (strandType.equals("+")) {
+            if (isSense) {
                 result = targetRef.getSenseSequence();
-            } else if (strandType.equals("-")) {
-                result = targetRef.getAntiSenseSequence();
             } else {
-                LoggingUtility.printError("Unrecognized Strand Type: " + strandType);
+                result = targetRef.getAntiSenseSequence();
             }
         }
 
