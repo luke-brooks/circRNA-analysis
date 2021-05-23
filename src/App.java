@@ -3,7 +3,7 @@ import config.BsjConfiguration;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Starting bsj app!");
+        System.out.println("Starting BsjAnalysis!");
         BsjConfiguration config = new BsjConfiguration("_RNA-Seq");
         
         // inputs
@@ -21,6 +21,6 @@ public class App {
         BsjAnalyzer bsjAnalyzer = new BsjAnalyzer(config);
         bsjAnalyzer.execute();
 
-        System.out.println("Completed run of bsj app!");
+        System.out.println("Completed BsjAnalysis!");
     }
 }

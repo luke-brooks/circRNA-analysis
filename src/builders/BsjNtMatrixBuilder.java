@@ -7,6 +7,7 @@ import static config.Constants.OUT_EXTENSION;
 import models.BedFile;
 import models.BsjDataRow;
 import utilities.FileUtility;
+import utilities.LoggingUtility;
 
 public class BsjNtMatrixBuilder {
 
@@ -33,7 +34,7 @@ public class BsjNtMatrixBuilder {
 
             bsjNtMatrixOutfile.close();
         } catch (Exception e) {
-            System.out.println("Error in BsjNtMatrixBuilder#buildBsjNtMatrixOutputFile(): " + e.getMessage());
+            LoggingUtility.printError("Error in BsjNtMatrixBuilder#buildBsjNtMatrixOutputFile(): " + e.getMessage());
         }
     }
 

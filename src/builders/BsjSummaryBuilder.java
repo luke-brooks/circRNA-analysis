@@ -1,7 +1,6 @@
 package builders;
 
 import java.io.BufferedWriter;
-import java.util.ArrayList;
 
 import models.BedFile;
 import models.BsjDataRow;
@@ -9,6 +8,7 @@ import models.BsjDataRow;
 import static config.Constants.BSJ_SUMMARY_FILE_SUFFIX;
 import static config.Constants.CSV_EXTENSION;
 import utilities.FileUtility;
+import utilities.LoggingUtility;
 
 public class BsjSummaryBuilder {
 
@@ -27,7 +27,7 @@ public class BsjSummaryBuilder {
 
             bsjSummaryOutfile.close();
         } catch (Exception e) {
-            System.out.println("Error in BsjSummaryBuilder#buildBsjSummaryOutput(): " + e.getMessage());
+            LoggingUtility.printError("Error in BsjSummaryBuilder#buildBsjSummaryOutput(): " + e.getMessage());
         }
     }
 

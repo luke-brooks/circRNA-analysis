@@ -15,6 +15,7 @@ import static config.Constants.SLASH;
 import models.BedFile;
 import models.BsjDataRow;
 import models.ChromosomeRef;
+import utilities.LoggingUtility;
 
 public class BsjAnalyzer {
     private BsjConfiguration _config;
@@ -76,11 +77,11 @@ public class BsjAnalyzer {
                     result.add(bedFileData);
                     inputBedFile.close();
                 } else {
-                    System.out.println("Not .bed file type: " + bedFileName);
+                    LoggingUtility.printWarning("Not .bed file type: " + bedFileName);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error in BsjAnalysis#processBedFileData(): " + e.getMessage());
+            LoggingUtility.printError("Error in BsjAnalysis#processBedFileData(): " + e.getMessage());
         }
         return result;
     }
@@ -136,18 +137,19 @@ public class BsjAnalyzer {
         String result = "";
 
         ChromosomeRef targetRef = _chromosomeReferences.stream()
-                .filter(ref -> ref.getSenseName().toLowerCase().equals(chromosomeName.toLowerCase())).findAny()
+                .filter(ref -> ref.getSenseName().toLowerCase().equals(chromosomeName.toLowerCase()))
+                .findAny()
                 .orElse(null);
 
         if (targetRef == null) {
-            System.out.println("Error: No Reference File for Chromosome: " + chromosomeName);
+            LoggingUtility.printWarning("No Reference File for Chromosome: " + chromosomeName);
         } else {
             if (strandType.equals("+")) {
                 result = targetRef.getSenseSequence();
             } else if (strandType.equals("-")) {
                 result = targetRef.getAntiSenseSequence();
             } else {
-                System.out.println("Error: Unrecognized Strand Type: " + strandType);
+                LoggingUtility.printError("Unrecognized Strand Type: " + strandType);
             }
         }
 
