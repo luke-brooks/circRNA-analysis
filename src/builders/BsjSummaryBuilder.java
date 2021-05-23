@@ -19,8 +19,8 @@ public class BsjSummaryBuilder {
             bsjSummaryOutfile.write(buildBsjSummaryHeaderLine());
             bsjSummaryOutfile.write("\n");
 
-            for (BsjDataRow parsedRow : processedBedFile.getFileBsjData()) {
-                String outputLine = buildOutputLineBsjSummary(parsedRow);
+            for (BsjDataRow processedRow : processedBedFile.getFileBsjData()) {
+                String outputLine = buildOutputLineBsjSummary(processedRow);
                 bsjSummaryOutfile.write(outputLine);
                 bsjSummaryOutfile.write("\n");
             }

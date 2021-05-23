@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import builders.BsjNtMatrixBuilder;
 import builders.BsjSummaryBuilder;
 import builders.ChromosomeRefBuilder;
 import builders.SpliceDaOptionsBuilder;
@@ -37,6 +38,8 @@ public class BsjAnalyzer {
     private void compileOutputs(ArrayList<BedFile> processedBedFiles) {
         for (BedFile processedFile : processedBedFiles) {
             BsjSummaryBuilder.buildBsjSummaryOutputFile(processedFile, _config.getBsjSummaryPath());
+
+            BsjNtMatrixBuilder.buildBsjNtMatrixOutputFile(processedFile, _config.getBsjNtMatrixPath());
         }
     }
 
@@ -59,7 +62,7 @@ public class BsjAnalyzer {
                         int junctionEnd = Integer.parseInt(dataColumns[1]);
                         int junctionStart = Integer.parseInt(dataColumns[2]);
                         String name = dataColumns[3];
-                        String bsjCount = dataColumns[4];
+                        int bsjCount = Integer.parseInt(dataColumns[4]);
                         String strand = dataColumns[5];
 
                         BsjDataRow row = new BsjDataRow(chromosome, junctionStart, junctionEnd, name, bsjCount, strand);

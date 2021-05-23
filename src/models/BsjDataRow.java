@@ -6,14 +6,14 @@ public class BsjDataRow {
     private int junctionStart;
     private int junctionEnd;
     private String name;
-    private String bsjCount;
+    private int bsjCount;
     private String strand; // either "+" or "-"
 
     // Calculated values
     private String bsjFlankingSequence;
     private String spliceDa; // always 4 characters
 
-    public BsjDataRow(String chromosome, int junctionStart, int junctionEnd, String name, String bsjCount, String strand) {
+    public BsjDataRow(String chromosome, int junctionStart, int junctionEnd, String name, int bsjCount, String strand) {
         this.chromosome = chromosome;
         this.junctionStart = junctionStart;
         this.junctionEnd = junctionEnd;
@@ -35,7 +35,7 @@ public class BsjDataRow {
     public String getName() {
         return name;
     }
-    public String getBsjCount() {
+    public int getBsjCount() {
         return bsjCount;
     }
     public String getStrand() {
