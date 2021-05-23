@@ -4,6 +4,8 @@ import config.BsjConfiguration;
 public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Starting BsjAnalysis!");
+
+        // initialize config with top-level input/output folder
         BsjConfiguration config = new BsjConfiguration("_RNA-Seq");
         
         // inputs

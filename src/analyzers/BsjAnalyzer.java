@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import builders.BsjNtMatrixBuilder;
+import builders.BsjSpliceDaFrequencyBuilder;
 import builders.BsjSummaryBuilder;
 import builders.ChromosomeRefBuilder;
 import builders.SpliceDaOptionsBuilder;
@@ -31,17 +32,23 @@ public class BsjAnalyzer {
     public void execute() {
         ArrayList<BedFile> processedBedFiles = processBedFileData();
 
-        // _chromosomeReferences = new ArrayList<>(); // dump data-heavy list
+        _chromosomeReferences = new ArrayList<>(); // dump data-heavy list
 
         compileOutputs(processedBedFiles);
     }
     
     private void compileOutputs(ArrayList<BedFile> processedBedFiles) {
-        for (BedFile processedFile : processedBedFiles) {
-            BsjSummaryBuilder.buildBsjSummaryOutputFile(processedFile, _config.getBsjSummaryPath());
+        LoggingUtility.printInfo("Building BSJ Summary Output");
+        LoggingUtility.printInfo("Building NT Matrix Output");
 
+        for (BedFile processedFile : processedBedFiles) {
+
+            BsjSummaryBuilder.buildBsjSummaryOutputFile(processedFile, _config.getBsjSummaryPath());
             BsjNtMatrixBuilder.buildBsjNtMatrixOutputFile(processedFile, _config.getBsjNtMatrixPath());
         }
+
+        LoggingUtility.printInfo("Building Splice DA Summary Output");
+        BsjSpliceDaFrequencyBuilder.buildBsjSpliceDaFrequencyOutputFile(processedBedFiles, _config.getSpliceDaFrequencyPath(), _spliceOptions);
     }
 
     private ArrayList<BedFile> processBedFileData() {

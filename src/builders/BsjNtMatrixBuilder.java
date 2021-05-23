@@ -22,7 +22,7 @@ public class BsjNtMatrixBuilder {
 
                 // convert each character of BsjFlankingSequence to numeral
                 for (int i = 0; i < processedRow.getBsjFlankingSequence().length(); i++) {
-                    builder.append("\t" + convertNT(processedRow.getBsjFlankingSequence().charAt(i)));
+                    builder.append("," + convertNT(processedRow.getBsjFlankingSequence().charAt(i)));
                 }
 
                 // write X lines of numeral representation of BsjFlankingSequnce to output where X = processedRow.getBsjCount()

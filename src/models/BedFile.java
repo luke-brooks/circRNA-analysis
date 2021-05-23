@@ -2,6 +2,8 @@ package models;
 
 import java.util.ArrayList;
 
+import utilities.StringUtility;
+
 public class BedFile {
     private String fileName;
     private ArrayList<BsjDataRow> fileBsjData;
@@ -14,6 +16,11 @@ public class BedFile {
     public String getFileName() {
         return fileName;
     }
+
+    // utility func is busted
+    // public String getFileNameWithoutExtension() {
+    //     return StringUtility.removeFileNameExtension(fileName);
+    // }
 
     public ArrayList<BsjDataRow> getFileBsjData() {
         return fileBsjData;
