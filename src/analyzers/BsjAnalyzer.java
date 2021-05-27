@@ -116,7 +116,7 @@ public class BsjAnalyzer {
         int highB = lowB + 2;
         String fastaB = getFasta(refFileData, lowB, highB);
 
-        int highA = junctionEnd;
+        int highA = junctionEnd - 1;
         int lowA = highA - 2;
         String fastaA = getFasta(refFileData, lowA, highA);
 
@@ -136,7 +136,7 @@ public class BsjAnalyzer {
         int lowB = highB - 30;
         String fastaB = getFasta(refFileData, lowB, highB);
 
-        int lowA = junctionEnd;
+        int lowA = junctionEnd - 1;
         int highA = lowA + 30;
         String fastaA = getFasta(refFileData, lowA, highA);
 
@@ -146,7 +146,7 @@ public class BsjAnalyzer {
             result = StringUtility.reverseString(result);
         }
 
-        return StringUtility.reverseString(result);
+        return result;
     }
 
     private String getReferenceFileData(String chromosomeName, boolean isSense) {
