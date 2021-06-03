@@ -30,11 +30,14 @@ public class ChromosomeRef {
     public boolean getIsHuman() {
         return isHuman;
     }
-    public String getSenseSequence() {
-		return senseSequence;
-    }
-    public String getAntiSenseSequence() {
-		return antiSenseSequence;
+    public String getSequence(boolean isSense) {
+        String result = "";
+        if (isSense) {
+            result = senseSequence;
+        } else {
+            result = antiSenseSequence;
+        }
+        return result;
     }
 
     // computed property getters

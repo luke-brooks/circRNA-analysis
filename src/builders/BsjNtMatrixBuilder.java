@@ -3,7 +3,9 @@ package builders;
 import java.io.BufferedWriter;
 
 import static config.Constants.CSV_EXTENSION;
+import static config.Constants.HUMAN_PREFIX;
 import static config.Constants.OUT_EXTENSION;
+import static config.Constants.VIRAL_PREFIX;
 import models.BedFile;
 import models.BsjDataRow;
 import utilities.FileUtility;
@@ -13,10 +15,11 @@ public class BsjNtMatrixBuilder {
 
     public static void buildBsjNtMatrixOutputFile(BedFile processedBedFile, String bsjNtMatrixOutputPath) {
         try {
-            BufferedWriter bsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, processedBedFile.getFileName() + OUT_EXTENSION + CSV_EXTENSION);
+            BufferedWriter humanBsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, HUMAN_PREFIX + processedBedFile.getFileName() + OUT_EXTENSION + CSV_EXTENSION);
+            BufferedWriter viralBsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, VIRAL_PREFIX + processedBedFile.getFileName() + OUT_EXTENSION + CSV_EXTENSION);
 
             for (BsjDataRow processedRow : processedBedFile.getFileBsjData()) {
-                // c1 is processedRow.getName() - no other logic needed
+                BufferedWriter targetOutputFile = processedRow.getIsHuman() ? humanBsjNtMatrixOutfile : viralBsjNtMatrixOutfile;
                 StringBuilder builder = new StringBuilder();
                 builder.append(processedRow.getName());
 
@@ -27,12 +30,13 @@ public class BsjNtMatrixBuilder {
 
                 // write X lines of numeral representation of BsjFlankingSequnce to output where X = processedRow.getBsjCount()
                 for (int i = 0; i < processedRow.getBsjCount(); i++) {
-                    bsjNtMatrixOutfile.write(builder.toString());
-                    bsjNtMatrixOutfile.write("\n");
+                    targetOutputFile.write(builder.toString());
+                    targetOutputFile.write("\n");
                 }
             }
 
-            bsjNtMatrixOutfile.close();
+            humanBsjNtMatrixOutfile.close();
+            viralBsjNtMatrixOutfile.close();
         } catch (Exception e) {
             LoggingUtility.printError("Error in BsjNtMatrixBuilder#buildBsjNtMatrixOutputFile(): " + e.getMessage());
         }

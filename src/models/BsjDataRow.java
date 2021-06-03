@@ -15,6 +15,7 @@ public class BsjDataRow {
     private String bsjFlankingSequence;
     private String spliceDa; // always 4 characters
     private boolean isSense;
+    private boolean isHuman;
 
     public BsjDataRow(String chromosome, int junctionStart, int junctionEnd, String name, int bsjCount, String strand) throws Exception {
         this.chromosome = chromosome;
@@ -56,11 +57,17 @@ public class BsjDataRow {
     public String getSpliceDa() {
         return spliceDa;
     }
+    public boolean getIsHuman() {
+        return isHuman;
+    }
     public void setBsjFlankingSequence(String bsjFlankingSequence) {
         this.bsjFlankingSequence = bsjFlankingSequence;
     }
     public void setSpliceDa(String spliceDa)  {
         this.spliceDa = spliceDa;
+    }
+    public void setIsHuman(boolean isHuman) {
+        this.isHuman = isHuman;
     }
 
     private boolean calculateIsSense(String strandType) throws Exception {

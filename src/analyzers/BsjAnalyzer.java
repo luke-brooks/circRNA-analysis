@@ -95,16 +95,22 @@ public class BsjAnalyzer {
     }
 
     private boolean calculateBsjSummaryValues(BsjDataRow row) {
-        String refFileData = getReferenceFileData(row.getChromosome(), row.getIsSense());
-
-        if("".equals(refFileData)) {
+        ChromosomeRef refFile = getReferenceFile(row.getChromosome());
+            
+        if (refFile == null) {
+            LoggingUtility.printWarning("No Reference File for Chromosome: " + row.getChromosome());
             // no chromosome ref available
             return false;
         }
 
+        String refFileData = refFile.getSequence(row.getIsSense());
+
         // there's gotta be a way to simplify these...
         row.setBsjFlankingSequence(getBsjFlankingSequence(row.getJunctionStart(), row.getJunctionEnd(), row.getIsSense(), refFileData));
         row.setSpliceDa(getSpliceDaSequence(row.getJunctionStart(), row.getJunctionEnd(), row.getIsSense(), refFileData));
+
+        // set isHuman after refFile match
+        row.setIsHuman(refFile.getIsHuman());
 
         return true;
     }
@@ -116,7 +122,7 @@ public class BsjAnalyzer {
         int highB = lowB + 2;
         String fastaB = getFasta(refFileData, lowB, highB);
 
-        int highA = junctionEnd - 1;
+        int highA = junctionEnd;
         int lowA = highA - 2;
         String fastaA = getFasta(refFileData, lowA, highA);
 
@@ -136,7 +142,7 @@ public class BsjAnalyzer {
         int lowB = highB - 30;
         String fastaB = getFasta(refFileData, lowB, highB);
 
-        int lowA = junctionEnd - 1;
+        int lowA = junctionEnd;
         int highA = lowA + 30;
         String fastaA = getFasta(refFileData, lowA, highA);
 
@@ -149,25 +155,13 @@ public class BsjAnalyzer {
         return result;
     }
 
-    private String getReferenceFileData(String chromosomeName, boolean isSense) {
-        String result = "";
-
+    private ChromosomeRef getReferenceFile(String chromosomeName) {
         ChromosomeRef targetRef = _chromosomeReferences.stream()
                 .filter(ref -> ref.getSenseName().toLowerCase().equals(chromosomeName.toLowerCase()))
                 .findAny()
                 .orElse(null);
 
-        if (targetRef == null) {
-            LoggingUtility.printWarning("No Reference File for Chromosome: " + chromosomeName);
-        } else {
-            if (isSense) {
-                result = targetRef.getSenseSequence();
-            } else {
-                result = targetRef.getAntiSenseSequence();
-            }
-        }
-
-        return result;
+        return targetRef;
     }
 
     private String getFasta(String sourceString, int startIndex, int endIndex) {
