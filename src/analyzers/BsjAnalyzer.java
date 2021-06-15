@@ -33,7 +33,7 @@ public class BsjAnalyzer {
     public void execute() {
         ArrayList<BedFile> processedBedFiles = processBedFileData();
 
-        _chromosomeReferences = new ArrayList<>(); // dump data-heavy list
+        _chromosomeReferences = ChromosomeRefBuilder.getAllAssemblies();
 
         compileOutputs(processedBedFiles);
     }
@@ -49,7 +49,7 @@ public class BsjAnalyzer {
         }
 
         LoggingUtility.printInfo("Building Splice DA Summary Output");
-        BsjSpliceDaFrequencyBuilder.buildBsjSpliceDaFrequencyOutputFile(processedBedFiles, _config.getSpliceDaFrequencyPath(), _spliceOptions);
+        BsjSpliceDaFrequencyBuilder.buildBsjSpliceDaFrequencyOutput(processedBedFiles, _config.getSpliceDaFrequencyPath(), _chromosomeReferences, _spliceOptions);
     }
 
     private ArrayList<BedFile> processBedFileData() {

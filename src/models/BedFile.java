@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import utilities.StringUtility;
 
 public class BedFile {
-    private String fileName;
+    private String fileName; // also referred to as "sample name"
     private ArrayList<BsjDataRow> fileBsjData;
 
     public BedFile(String fileName) {

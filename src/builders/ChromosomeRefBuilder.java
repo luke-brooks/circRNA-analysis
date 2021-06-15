@@ -26,7 +26,7 @@ public class ChromosomeRefBuilder {
         return allAssemblyRefs;
     }
 
-    private static ArrayList<ChromosomeRef> getAllAssemblies() {
+    public static ArrayList<ChromosomeRef> getAllAssemblies() {
         ArrayList<ChromosomeRef> result = buildHumanAssemblies();
         result.addAll(buildViralAssemblies());
         return result;
