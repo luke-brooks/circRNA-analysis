@@ -2,7 +2,7 @@ package builders;
 
 import java.io.BufferedWriter;
 
-import static config.Constants.CSV_EXTENSION;
+import static config.Constants.TXT_EXTENSION;
 import static config.Constants.HUMAN_PREFIX;
 import static config.Constants.OUT_EXTENSION;
 import static config.Constants.VIRAL_PREFIX;
@@ -15,8 +15,8 @@ public class BsjNtMatrixBuilder {
 
     public static void buildBsjNtMatrixOutputFile(BedFile processedBedFile, String bsjNtMatrixOutputPath) {
         try {
-            BufferedWriter humanBsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, HUMAN_PREFIX + processedBedFile.getFileName() + OUT_EXTENSION + CSV_EXTENSION);
-            BufferedWriter viralBsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, VIRAL_PREFIX + processedBedFile.getFileName() + OUT_EXTENSION + CSV_EXTENSION);
+            BufferedWriter humanBsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, HUMAN_PREFIX + processedBedFile.getFileName() + OUT_EXTENSION + TXT_EXTENSION);
+            BufferedWriter viralBsjNtMatrixOutfile = FileUtility.createOutFile(bsjNtMatrixOutputPath, VIRAL_PREFIX + processedBedFile.getFileName() + OUT_EXTENSION + TXT_EXTENSION);
 
             for (BsjDataRow processedRow : processedBedFile.getFileBsjData()) {
                 BufferedWriter targetOutputFile = processedRow.getIsHuman() ? humanBsjNtMatrixOutfile : viralBsjNtMatrixOutfile;
@@ -25,7 +25,7 @@ public class BsjNtMatrixBuilder {
 
                 // convert each character of BsjFlankingSequence to numeral
                 for (int i = 0; i < processedRow.getBsjFlankingSequence().length(); i++) {
-                    builder.append("," + convertNT(processedRow.getBsjFlankingSequence().charAt(i)));
+                    builder.append("\t" + convertNT(processedRow.getBsjFlankingSequence().charAt(i)));
                 }
 
                 // write X lines of numeral representation of BsjFlankingSequnce to output where X = processedRow.getBsjCount()
