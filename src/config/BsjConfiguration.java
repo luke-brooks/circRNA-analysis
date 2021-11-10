@@ -21,6 +21,9 @@ public class BsjConfiguration {
     String spliceDaFrequencyDirName;
     String sashimiDirName;
 
+    // Sashimi config values
+    int sashimiThreshold;
+
     public BsjConfiguration(String rnaSeqDirPath) {
         this.rnaSeqDirPath = DIR_REFERENCE + formatDirPath(rnaSeqDirPath);
     }
@@ -51,6 +54,10 @@ public class BsjConfiguration {
     }
     public void setSashimiDirName(String sashimiDirName) {
         this.sashimiDirName = formatDirPath(sashimiDirName);
+    }
+    // sashimi config values
+    public void setSashimiThreshold(int sashimiThreshold) {
+        this.sashimiThreshold = sashimiThreshold;
     }
 
     // top-level directory getter
@@ -83,6 +90,10 @@ public class BsjConfiguration {
     }
     public String getSashimiPath() {
         return formatDirPath(getOutputsAnalysisPath() + sashimiDirName);
+    }
+    // sashimi config values
+    public int getSashimiThreshold() {
+        return sashimiThreshold;
     }
 
     private String formatDirPath(String dir) {

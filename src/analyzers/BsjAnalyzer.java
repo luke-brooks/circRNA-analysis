@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import builders.BsjNtMatrixBuilder;
 import builders.BsjSpliceDaFrequencyBuilder;
 import builders.BsjSummaryBuilder;
+import builders.SashimiBuilder;
 import builders.ChromosomeRefBuilder;
 import builders.SpliceDaOptionsBuilder;
 import config.BsjConfiguration;
@@ -41,11 +42,13 @@ public class BsjAnalyzer {
     private void compileOutputs(ArrayList<BedFile> processedBedFiles) {
         LoggingUtility.printInfo("Building BSJ Summary Output");
         LoggingUtility.printInfo("Building NT Matrix Output");
+        LoggingUtility.printInfo("Building Sashimi Output");
 
         for (BedFile processedFile : processedBedFiles) {
 
             BsjSummaryBuilder.buildBsjSummaryOutputFile(processedFile, _config.getBsjSummaryPath());
             BsjNtMatrixBuilder.buildBsjNtMatrixOutputFile(processedFile, _config.getBsjNtMatrixPath());
+            SashimiBuilder.buildSashimiOutputFile(processedFile, _config.getSashimiPath(), _config.getSashimiThreshold());
         }
 
         LoggingUtility.printInfo("Building Splice DA Summary Output");

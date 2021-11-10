@@ -13,8 +13,7 @@ public class FileUtility {
         BufferedWriter result = null;
         try {
             FileWriter initFile = new FileWriter(new File(outDir + outFileName));
-            result = new BufferedWriter(initFile);
-            result.write("\n");
+                result = new BufferedWriter(initFile);
         } catch (Exception e) {
             LoggingUtility.printError("Error in FileUtility#createOutFile()" + e.getMessage());
         }

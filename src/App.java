@@ -20,6 +20,9 @@ public class App {
         config.setSpliceDaFrequencyDirName("3.SpliceDAFrequency");
         config.setSashimiDirName("4.Sashimi");
 
+        // sashimi config
+        config.setSashimiThreshold(1);
+
         BsjAnalyzer bsjAnalyzer = new BsjAnalyzer(config);
         bsjAnalyzer.execute();
 
