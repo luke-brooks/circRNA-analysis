@@ -9,6 +9,7 @@ import builders.BsjNtMatrixBuilder;
 import builders.BsjSpliceDaFrequencyBuilder;
 import builders.BsjSummaryBuilder;
 import builders.SashimiBuilder;
+import builders.SpliceDaSequenceBuilder;
 import builders.ChromosomeRefBuilder;
 import builders.SpliceDaOptionsBuilder;
 import config.BsjConfiguration;
@@ -49,6 +50,7 @@ public class BsjAnalyzer {
             BsjSummaryBuilder.buildBsjSummaryOutputFile(processedFile, _config.getBsjSummaryPath());
             BsjNtMatrixBuilder.buildBsjNtMatrixOutputFile(processedFile, _config.getBsjNtMatrixPath());
             SashimiBuilder.buildSashimiOutputFile(processedFile, _config.getSashimiPath(), _config.getSashimiThreshold());
+            SpliceDaSequenceBuilder.buildSpliceDaSequenceOutputFile(processedFile, _config.getSpliceDaSequencePath());
         }
 
         LoggingUtility.printInfo("Building Splice DA Summary Output");

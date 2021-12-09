@@ -9,6 +9,7 @@ public class App {
         BsjConfiguration config = new BsjConfiguration("_RNA-Seq");
         
         // inputs
+        // config.setBedFileDirName("_BSJ_bed_files/S20_HSV1Organoids");
         config.setBedFileDirName("_BSJ_bed_files/testfiles");
         config.setRefFileDirName("_Refs");
         config.setSpliceDaOptionsFileName("SpliceDAOptions.txt");
@@ -19,6 +20,7 @@ public class App {
         config.setBsjNtMatrixDirName("2.BSJ_Nt_Matrix");
         config.setSpliceDaFrequencyDirName("3.SpliceDAFrequency");
         config.setSashimiDirName("4.Sashimi");
+        config.setSpliceDaSequenceDirName("5.SpliceDASequence");
 
         // sashimi config
         config.setSashimiThreshold(1);
