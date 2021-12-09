@@ -26,6 +26,8 @@ public class BsjSpliceDaFrequencyBuilder {
                     _chromosomeRefs, _spliceOptions);
 
             for (BedFile processedFile : processedBedFiles) {
+                // refresh splice all counts when processing a new file
+                refreshAllSpliceCountLists(spliceDaOutputFiles);
 
                 // calculate each chromosome count for every bed file
                 for (ChromosomeRef chromosomeRef : _chromosomeRefs) {
@@ -80,14 +82,6 @@ public class BsjSpliceDaFrequencyBuilder {
         return String.valueOf(total);
     }
 
-    private static ArrayList<String> buildSpliceCountList(int listLength) {
-        ArrayList<String> result = new ArrayList<String>();
-        for (int i = 0; i < listLength; i++) {
-            result.add("0");
-        }
-        return result;
-    }
-
     private static String buildSpliceTotalLine(String sampleName, ArrayList<String> spliceCounts) {
         String spliceTotal = getSpliceTotal(spliceCounts);
 
@@ -105,6 +99,12 @@ public class BsjSpliceDaFrequencyBuilder {
         }
     }
 
+    private static void refreshAllSpliceCountLists(ArrayList<SpliceDaOutput> spliceDaOutputFiles) throws IOException {
+        for (SpliceDaOutput spliceDaOutput : spliceDaOutputFiles) {
+            spliceDaOutput.refreshSpliceList();
+        }
+    }
+
     private static ArrayList<SpliceDaOutput> getOutputFiles(String bsjSpliceDaFrequencyOutputPath,
             ArrayList<ChromosomeRef> _chromosomeRefs, ArrayList<String> _spliceOptions) throws IOException {
         ArrayList<SpliceDaOutput> result = new ArrayList<SpliceDaOutput>();
@@ -115,7 +115,7 @@ public class BsjSpliceDaFrequencyBuilder {
 
             daOutfile.write(buildOutputHeader(_spliceOptions));
 
-            SpliceDaOutput daOutput = new SpliceDaOutput(ref, daOutfile, buildSpliceCountList(_spliceOptions.size()));
+            SpliceDaOutput daOutput = new SpliceDaOutput(ref, daOutfile, _spliceOptions.size());
             result.add(daOutput);
         }
 
