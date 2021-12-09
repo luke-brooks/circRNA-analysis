@@ -31,17 +31,21 @@ public class BsjSpliceDaFrequencyBuilder {
 
                 // calculate each chromosome count for every bed file
                 for (ChromosomeRef chromosomeRef : _chromosomeRefs) {
-                    
+
                     List<BsjDataRow> bsjRowsByChromosome = processedFile.getFileBsjData()
-                        .stream()
-                        .filter(bsjRow -> bsjRow.getChromosome().toLowerCase().equals(chromosomeRef.getSenseName().toLowerCase()))
-                        .collect(Collectors.toList());
+                            .stream()
+                            .filter(bsjRow -> bsjRow.getChromosome().toLowerCase()
+                                    .equals(chromosomeRef.getSenseName().toLowerCase()))
+                            .collect(Collectors.toList());
+
+                    String targetRef = chromosomeRef.getIsHuman() ? "Human" : chromosomeRef.getSenseName();
 
                     SpliceDaOutput targetDaOutput = spliceDaOutputFiles
-                        .stream()
-                        .filter(output -> output.getChromosomeName().toLowerCase().equals(chromosomeRef.getSenseName().toLowerCase()))
-                        .findAny()
-                        .orElse(null);
+                            .stream()
+                            .filter(output -> output.getChromosomeName().toLowerCase()
+                                    .equals(targetRef.toLowerCase()))
+                            .findAny()
+                            .orElse(null);
 
                     if (targetDaOutput == null) {
                         throw new Exception("Could not match Chromosome: " + chromosomeRef.getSenseName());
@@ -62,7 +66,8 @@ public class BsjSpliceDaFrequencyBuilder {
                         targetDaOutput.getSpliceCountsList().set(targetIndex, String.valueOf(updatedCount));
                     }
 
-                    String dataLine = buildSpliceTotalLine(processedFile.getFileName(), targetDaOutput.getSpliceCountsList());
+                    String dataLine = buildSpliceTotalLine(processedFile.getFileName(),
+                            targetDaOutput.getSpliceCountsList());
                     targetDaOutput.getOutfile().write(dataLine);
                 }
             }
@@ -110,14 +115,32 @@ public class BsjSpliceDaFrequencyBuilder {
         ArrayList<SpliceDaOutput> result = new ArrayList<SpliceDaOutput>();
 
         for (ChromosomeRef ref : _chromosomeRefs) {
-            BufferedWriter daOutfile = FileUtility.createOutFile(bsjSpliceDaFrequencyOutputPath,
-                    buildOutputFileName(ref.getSenseName()));
-
-            daOutfile.write(buildOutputHeader(_spliceOptions));
-
-            SpliceDaOutput daOutput = new SpliceDaOutput(ref, daOutfile, _spliceOptions.size());
-            result.add(daOutput);
+            // only create separate files for non-human chromosomes
+            if (!ref.getIsHuman()) {
+                SpliceDaOutput daOutput = getSpliceDaOutputFile(bsjSpliceDaFrequencyOutputPath, ref.getSenseName(), ref,
+                        _spliceOptions);
+                result.add(daOutput);
+            }
         }
+
+        // one file for all human chromosomes
+        SpliceDaOutput humanOutput = getSpliceDaOutputFile(bsjSpliceDaFrequencyOutputPath, "Human", null,
+                _spliceOptions);
+        result.add(humanOutput);
+
+        return result;
+    }
+
+    private static SpliceDaOutput getSpliceDaOutputFile(String bsjSpliceDaFrequencyOutputPath, String fileName,
+            ChromosomeRef ref,
+            ArrayList<String> _spliceOptions) throws IOException {
+
+        BufferedWriter daOutfile = FileUtility.createOutFile(bsjSpliceDaFrequencyOutputPath,
+                buildOutputFileName(fileName));
+
+        daOutfile.write(buildOutputHeader(_spliceOptions));
+
+        SpliceDaOutput result = new SpliceDaOutput(ref, daOutfile, _spliceOptions.size());
 
         return result;
     }

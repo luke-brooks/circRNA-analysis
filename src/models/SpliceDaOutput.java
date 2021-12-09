@@ -9,9 +9,11 @@ public class SpliceDaOutput {
     ArrayList<String> spliceCounts;
 
     private int spliceListLength;
+    private boolean isHumanAgg; // aggregate all human chromosomes into one output file
 
     public SpliceDaOutput(ChromosomeRef chromosomeRef, BufferedWriter outfile, int spliceListLength) {
         this.chromosomeRef = chromosomeRef;
+        this.isHumanAgg = chromosomeRef == null;
         this.outfile = outfile;
         this.spliceListLength = spliceListLength;
     }
@@ -20,13 +22,20 @@ public class SpliceDaOutput {
         return chromosomeRef;
     }
     public String getChromosomeName() {
-        return chromosomeRef.getSenseName();
+        if (isHumanAgg) {
+            return "Human";
+        } else {
+            return chromosomeRef.getSenseName();
+        }
     }
     public BufferedWriter getOutfile() {
         return outfile;
     }
     public ArrayList<String> getSpliceCountsList() {
         return spliceCounts;
+    }
+    public boolean getIsHumanAgg() {
+        return isHumanAgg;
     }
 
     public void refreshSpliceList() {
