@@ -10,7 +10,7 @@ public class App {
         
         // inputs
         // config.setBedFileDirName("_BSJ_bed_files/S20_HSV1Organoids");
-        config.setBedFileDirName("_BSJ_bed_files/testfiles");
+        config.setBedFileDirName("_BSJ_bed_files/S20_HSV1Organoids");
         config.setRefFileDirName("_Refs");
         config.setSpliceDaOptionsFileName("SpliceDAOptions.txt");
     
@@ -21,6 +21,7 @@ public class App {
         config.setSpliceDaFrequencyDirName("3.SpliceDAFrequency");
         config.setSashimiDirName("4.Sashimi");
         config.setSpliceDaSequenceDirName("5.SpliceDASequence");
+        config.setBsjFlankingSequenceDirName("6.BSJFlankingSequence");
 
         // sashimi config
         config.setSashimiThreshold(1);

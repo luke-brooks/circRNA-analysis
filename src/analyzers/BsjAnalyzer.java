@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import builders.BsjNtMatrixBuilder;
 import builders.BsjSpliceDaFrequencyBuilder;
+import builders.BsjFlankingSequenceBuilder;
 import builders.BsjSummaryBuilder;
 import builders.SashimiBuilder;
 import builders.SpliceDaSequenceBuilder;
@@ -51,6 +52,7 @@ public class BsjAnalyzer {
             BsjNtMatrixBuilder.buildBsjNtMatrixOutputFile(processedFile, _config.getBsjNtMatrixPath());
             SashimiBuilder.buildSashimiOutputFile(processedFile, _config.getSashimiPath(), _config.getSashimiThreshold());
             SpliceDaSequenceBuilder.buildSpliceDaSequenceOutputFile(processedFile, _config.getSpliceDaSequencePath());
+            BsjFlankingSequenceBuilder.buildBsjFlankingSequenceOutputFile(processedFile, _config.getBsjFlankingSequencePath());
         }
 
         LoggingUtility.printInfo("Building Splice DA Summary Output");

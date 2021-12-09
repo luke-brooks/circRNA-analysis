@@ -21,6 +21,7 @@ public class BsjConfiguration {
     String spliceDaFrequencyDirName;
     String sashimiDirName;
     String spliceDaSequenceDirName;
+    String bsjFlankingSequenceDirName;
 
     // Sashimi config values
     int sashimiThreshold;
@@ -58,6 +59,9 @@ public class BsjConfiguration {
     }
     public void setSpliceDaSequenceDirName(String spliceDaSequenceDirName) {
         this.spliceDaSequenceDirName = formatDirPath(spliceDaSequenceDirName);
+    }
+    public void setBsjFlankingSequenceDirName(String bsjFlankingSequenceDirName) {
+        this.bsjFlankingSequenceDirName = bsjFlankingSequenceDirName;
     }
     // sashimi config values
     public void setSashimiThreshold(int sashimiThreshold) {
@@ -97,6 +101,9 @@ public class BsjConfiguration {
     }
     public String getSpliceDaSequencePath() {
         return formatDirPath(getOutputsAnalysisPath() + spliceDaSequenceDirName);
+    }
+    public String getBsjFlankingSequencePath() {
+        return formatDirPath(getOutputsAnalysisPath() + bsjFlankingSequenceDirName);
     }
     // sashimi config values
     public int getSashimiThreshold() {
