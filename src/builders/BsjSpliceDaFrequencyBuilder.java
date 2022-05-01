@@ -51,6 +51,11 @@ public class BsjSpliceDaFrequencyBuilder {
                         throw new Exception("Could not match Chromosome: " + chromosomeRef.getSenseName());
                     }
 
+                    // refresh splice counts for each line in human aggregate file
+                    if (chromosomeRef.getIsHuman()) {
+                        targetDaOutput.refreshSpliceList();
+                    }
+
                     for (BsjDataRow row : bsjRowsByChromosome) {
 
                         String sequenceToMatch = row.getSpliceDa();

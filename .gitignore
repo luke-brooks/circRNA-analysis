@@ -1,6 +1,7 @@
 # RNA references & outputs
 _RNA-Seq/*
 src/_RNA-Seq/*
+.DS_Store
 
 # Requirements files
 ~*.docx

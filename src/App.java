@@ -9,8 +9,8 @@ public class App {
         BsjConfiguration config = new BsjConfiguration("_RNA-Seq");
         
         // inputs
-        // config.setBedFileDirName("_BSJ_bed_files/S20_HSV1Organoids");
-        config.setBedFileDirName("_BSJ_bed_files/S20_HSV1Organoids");
+        // config.setBedFileDirName("_BSJ_bed_files/S9_SIs");
+        config.setBedFileDirName("_BSJ_bed_files/S6_AllHSV1");
         config.setRefFileDirName("_Refs");
         config.setSpliceDaOptionsFileName("SpliceDAOptions.txt");
     

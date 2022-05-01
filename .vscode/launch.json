@@ -9,15 +9,7 @@
                 "name": "Launch App",
                 "request": "launch",
                 "mainClass": "App",
-                "projectName": "circRNA-analysis_50ea5c89",
-                "vmArgs": "-Xms6g -Xmx8g"
-            },
-            {
-                "type": "java",
-                "name": "Launch App",
-                "request": "launch",
-                "mainClass": "App",
-                "projectName": "circRNA-analysis_5f3f4194",
+                "projectName": "new-circ-rna",
                 "vmArgs": "-Xms6g -Xmx8g"
             }
         ]
