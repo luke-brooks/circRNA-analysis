@@ -9,7 +9,11 @@ public class BsjConfiguration {
 
     // input directories
     String refFileDirName;
+    String hostRefDirName;
     String bedFileDirName;
+
+    // host config
+    int hostChromosomeLength;
 
     // reference files
     String spliceDaOptionsFileName;
@@ -34,8 +38,15 @@ public class BsjConfiguration {
     public void setRefFileDirName(String refFileDirName) {
         this.refFileDirName = formatDirPath(refFileDirName);
     }
+    public void setHostRefDir(String hostRefDirName) {
+        this.hostRefDirName = formatDirPath(hostRefDirName);
+    }
     public void setBedFileDirName(String bedFileDirName) {
         this.bedFileDirName = formatDirPath(bedFileDirName);
+    }
+    // host config
+    public void setHostChromosomeLength(int hostChromosomeLength) {
+        this.hostChromosomeLength = hostChromosomeLength;
     }
     // reference files
     public void setSpliceDaOptionsFileName(String spliceDaOptionsFileName) {
@@ -76,8 +87,15 @@ public class BsjConfiguration {
     public String getRefFilePath() {
         return formatDirPath(rnaSeqDirPath + refFileDirName);
     }
+    public String getHostRefDirPath() {
+        return formatDirPath(getRefFilePath() + hostRefDirName);
+    }
     public String getBedFilePath() {
         return formatDirPath(rnaSeqDirPath + bedFileDirName);
+    }
+    // host config
+    public int getHostChromosomeLength() {
+        return hostChromosomeLength;
     }
     // reference files
     public String getSpliceDaOptionsFilePath() {

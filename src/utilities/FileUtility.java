@@ -29,7 +29,7 @@ public class FileUtility {
                 if (!skipFirstLine || !isFirstLine) {
                     stringBuilder.append(line);
                 } else {
-                    LoggingUtility.printInfo("Skipping line: " + line);
+                    LoggingUtility.printInfo("Skipping line: " + line + " of file: " + file);
                     isFirstLine = false;
                 }
             }
@@ -47,10 +47,10 @@ public class FileUtility {
             BufferedReader fileToRead = new BufferedReader(new FileReader(file));
             for (String line = fileToRead.readLine(); line != null; line = fileToRead.readLine()) {
                 if (!skipFirstLine || !isFirstLine) {
-                    LoggingUtility.printInfo("Line data: " + line);
+                    // LoggingUtility.printInfo("Line data: " + line);
                     fileOutput.add(line.toUpperCase());
                 } else {
-                    LoggingUtility.printInfo("Skipping: " + line);
+                    // LoggingUtility.printInfo("Skipping: " + line);
                     isFirstLine = false;
                 }
             }

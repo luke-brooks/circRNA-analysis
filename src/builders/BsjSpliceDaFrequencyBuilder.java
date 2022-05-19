@@ -40,6 +40,9 @@ public class BsjSpliceDaFrequencyBuilder {
 
                     String targetRef = chromosomeRef.getIsHuman() ? "Human" : chromosomeRef.getSenseName();
 
+                    LoggingUtility.printInfo(
+                        "buildBsjSpliceDaFrequencyOutput(): target ref: " + targetRef);
+
                     SpliceDaOutput targetDaOutput = spliceDaOutputFiles
                             .stream()
                             .filter(output -> output.getChromosomeName().toLowerCase()

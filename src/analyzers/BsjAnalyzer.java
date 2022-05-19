@@ -29,14 +29,14 @@ public class BsjAnalyzer {
 
     public BsjAnalyzer(BsjConfiguration config) {
         this._config = config;
-        this._chromosomeReferences = ChromosomeRefBuilder.buildChromosomeRefs(config.getRefFilePath());
+        this._chromosomeReferences = ChromosomeRefBuilder.buildChromosomeRefs(config.getRefFilePath(), config.getHostRefDirPath(), config.getHostChromosomeLength());
         this._spliceOptions = SpliceDaOptionsBuilder.buildSpliceOptions(config.getSpliceDaOptionsFilePath());
     }
 
     public void execute() {
         ArrayList<BedFile> processedBedFiles = processBedFileData();
 
-        _chromosomeReferences = ChromosomeRefBuilder.getAllAssemblies();
+        _chromosomeReferences = ChromosomeRefBuilder.getAllAssemblies(_config.getHostChromosomeLength());
 
         compileOutputs(processedBedFiles);
     }
@@ -81,12 +81,24 @@ public class BsjAnalyzer {
                         int bsjCount = Integer.parseInt(dataColumns[4]);
                         String strand = dataColumns[5];
 
+                        if(chromosome.equals("MH636806.1")){
+                            LoggingUtility.printInfo("Found a mhv68 one");
+                        }
+                        if(chromosome.equals("NC_006273.2")){
+                            LoggingUtility.printInfo("Found a cmv one");
+                        }
+                        if(chromosome.equals("NC_007605.1")){
+                            LoggingUtility.printInfo("Found a ebv one");
+                        }
+
                         BsjDataRow row = new BsjDataRow(chromosome, junctionStart, junctionEnd, name, bsjCount, strand);
 
                         boolean success = calculateBsjSummaryValues(row);
 
                         if(success) {
                             bedFileData.addBsjDataRow(row);
+                        } else {
+                            LoggingUtility.printWarning("Not able to calculate bsj summary: " + line);
                         }
                     }
                     result.add(bedFileData);
@@ -105,7 +117,7 @@ public class BsjAnalyzer {
         ChromosomeRef refFile = getReferenceFile(row.getChromosome());
             
         if (refFile == null) {
-            LoggingUtility.printWarning("No Reference File for Chromosome: " + row.getChromosome());
+            // LoggingUtility.printWarning("No Reference File for Chromosome: " + row.getChromosome());
             // no chromosome ref available
             return false;
         }
